@@ -1,11 +1,12 @@
 import React,{useState} from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar,Alert } from 'react-native';
 import { Dimensions } from 'react-native';
 import styled, { ThemeProvider } from 'styled-components/native';
 import theme from './theme';
 import Input from './componets/Input';
 import Task from './componets/Task';
 import DeleteAll from './componets/DeleteAll'
+import LineButton from './componets/LineButton'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLoading from 'expo-app-loading';
 
@@ -114,9 +115,41 @@ export default function App() {
     storeData('tasks',currentTask);
   }
 
-  //버킷리스트 전체 삭제
+  //버킷리스트 완료항목 삭제
   const _deleteAllTasks = () => {
-    clearAll();
+
+    const deleteCompletedItems = () => {
+      const currentTasks = {...tasks};
+      // const newTask = {};
+  
+      // for (let taskId in currentTask) {
+      //   const task = currentTask[taskId]
+      //   if(!task.completed) {
+      //     newTask[task.id] = task;
+      //   }
+      // }
+      // storeData('tasks',newTask);
+
+      const filteredTasks = 
+        Object.fromEntries(Object.entries(currentTasks)
+                                  .filter(task => !task[1].completed));
+      storeData('tasks',filteredTasks);
+    }
+
+    Alert.alert(
+      "삭제", //경고창 제목
+      "완료항목 전체를 삭제하시겠습니까?",  //경고창 메세지
+      [
+        {
+          text: "예",
+          onPress: () => deleteCompletedItems()
+        },
+        { text: "아니오",
+          onPress: () => console.log("OK Pressed")
+        }
+      ]
+    );
+
   }
   
   //input 포커스를 떠나면 비활성화
@@ -165,10 +198,11 @@ export default function App() {
             />)      
           }
         </List>
-        <DeleteAll 
+        {/* <DeleteAll 
               text={"완료항목 전체삭제"}
               deleteAllTasks={_deleteAllTasks}
-          /> 
+          />  */}
+          <LineButton text={'완료항목 전체삭제'} onPressOut={_deleteAllTasks}/>
       </Container>
     </ThemeProvider>
   );
