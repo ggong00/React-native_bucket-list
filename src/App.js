@@ -117,9 +117,15 @@ export default function App() {
 
   //버킷리스트 완료항목 삭제
   const _deleteAllTasks = () => {
+    const currentTasks = {...tasks};
+
+    const completedTasks = Object.entries(currentTasks)
+                                  .filter(task => task[1].completed);
+
+    if(completedTasks.length < 1) return;
 
     const deleteCompletedItems = () => {
-      const currentTasks = {...tasks};
+
       // const newTask = {};
   
       // for (let taskId in currentTask) {
@@ -133,7 +139,8 @@ export default function App() {
       const filteredTasks = 
         Object.fromEntries(Object.entries(currentTasks)
                                   .filter(task => !task[1].completed));
-      storeData('tasks',filteredTasks);
+
+        storeData('tasks',filteredTasks);
     }
 
     Alert.alert(
